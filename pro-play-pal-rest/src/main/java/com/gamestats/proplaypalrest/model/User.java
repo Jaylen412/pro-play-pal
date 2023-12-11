@@ -24,5 +24,9 @@ public class User {
     private String lastName;
     private String userName;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+    @ManyToOne
+    private Team favoriteTeam;
     private Instant createdDate;
 }
