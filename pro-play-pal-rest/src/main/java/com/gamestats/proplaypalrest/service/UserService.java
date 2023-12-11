@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -26,17 +27,20 @@ public class UserService {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
     }
-    public User createUser(User user) {
-        User newUser = User.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .userName(user.getUserName())
-                .password(user.getPassword())
-                .userRole(user.getUserRole())
-                .createdDate(Instant.now())
-                .build();
-        log.info(String.format("Saving user: %s", user.getUserName()));
-       return userRepo.save(newUser);
+    public User createUser(User user) throws Exception {
+        if (isNull(userRepo.findByUserName(user.getUserName()))) {
+            User newUser = User.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .userName(user.getUserName())
+                    .password(user.getPassword())
+                    .userRole(user.getUserRole())
+                    .createdDate(Instant.now())
+                    .build();
+            log.info(String.format("Saving user: %s", user.getUserName()));
+            return userRepo.save(newUser);
+        }
+        throw new Exception(String.format("User [%s] Already Exist",user.getUserName()));
     }
 
     public UserDto getUser(UUID userId) {
@@ -53,6 +57,7 @@ public class UserService {
         throw new NoSuchElementException(String.format("User: [%s] was not able to be located", userId));
     }
 
+//    TODO: Password hashing
 
 
 }
