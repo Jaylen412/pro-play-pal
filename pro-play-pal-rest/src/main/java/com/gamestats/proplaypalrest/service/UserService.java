@@ -57,6 +57,21 @@ public class UserService {
         throw new NoSuchElementException(String.format("User: [%s] was not able to be located", userId));
     }
 
+    public UserDto updateUser(UserDto userDto) {
+        Optional<User> user = userRepo.findById(userDto.getUserId());
+        if (nonNull(user)) {
+            User updatedUser = user.get();
+//            check if username exist if it does check if it belongs to the current user if so allow it if not "username already exist"
+//            updatedUser.setUserName();
+            updatedUser.setFavoriteTeam(userDto.getFavoriteTeam());
+//            Take updated password, pass into password hasher
+//            updatedUser.setPassword();
+            userRepo.save(updatedUser);
+            return userMapper.userEntityToDto(updatedUser);
+        }
+        return null;
+    }
+
 //    TODO: Password hashing
 
 

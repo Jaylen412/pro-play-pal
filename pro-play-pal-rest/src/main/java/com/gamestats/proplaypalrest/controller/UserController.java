@@ -13,7 +13,8 @@ import java.util.UUID;
 public class UserController {
     private UserService userService;
 
-    public UserController(@Autowired UserService userService) {
+    @Autowired
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

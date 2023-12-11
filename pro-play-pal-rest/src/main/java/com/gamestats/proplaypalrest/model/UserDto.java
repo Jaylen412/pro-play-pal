@@ -17,5 +17,6 @@ public class UserDto {
     private String lastName;
     private String userName;
     private UserRole userRole;
+    private Team favoriteTeam;
     private Instant createdDate;
 }
