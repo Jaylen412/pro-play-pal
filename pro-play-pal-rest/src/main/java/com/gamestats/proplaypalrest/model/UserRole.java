@@ -1,7 +1,5 @@
 package com.gamestats.proplaypalrest.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter

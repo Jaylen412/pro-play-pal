@@ -27,7 +27,7 @@ public class UserService {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
     }
-    public User createUser(User user) throws Exception {
+    public UserDto createUser(User user) throws Exception {
         if (isNull(userRepo.findByUserName(user.getUserName()))) {
             User newUser = User.builder()
                     .firstName(user.getFirstName())
@@ -38,7 +38,8 @@ public class UserService {
                     .createdDate(Instant.now())
                     .build();
             log.info(String.format("Saving user: %s", user.getUserName()));
-            return userRepo.save(newUser);
+            userRepo.save(newUser);
+            return userMapper.userEntityToDto(newUser);
         }
         throw new Exception(String.format("User [%s] Already Exist",user.getUserName()));
     }
@@ -57,10 +58,12 @@ public class UserService {
         throw new NoSuchElementException(String.format("User: [%s] was not able to be located", userId));
     }
 
+    // TODO: Refactor with a target user and source user in mind
     public UserDto updateUser(UserDto userDto) {
         Optional<User> user = userRepo.findById(userDto.getUserId());
         if (nonNull(user)) {
             User updatedUser = user.get();
+            updatedUser.setUserId(userDto.getUserId());
 //            check if username exist if it does check if it belongs to the current user if so allow it if not "username already exist"
 //            updatedUser.setUserName();
             updatedUser.setFavoriteTeam(userDto.getFavoriteTeam());
