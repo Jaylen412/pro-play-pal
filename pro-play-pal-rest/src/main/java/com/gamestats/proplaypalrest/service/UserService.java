@@ -5,12 +5,13 @@ import com.gamestats.proplaypalrest.model.UserDto;
 import com.gamestats.proplaypalrest.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -33,7 +34,7 @@ public class UserService {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .userName(user.getUserName())
-                    .password(user.getPassword())
+                    .password(hashUserPassword(user.getPassword()))
                     .userRole(user.getUserRole())
                     .createdDate(Instant.now())
                     .build();
@@ -75,7 +76,13 @@ public class UserService {
         return null;
     }
 
-//    TODO: Password hashing
+    private String hashUserPassword(String userPassword) {
+        String idForEncoder = "bcrypt";
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(idForEncoder, new BCryptPasswordEncoder());
+        PasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncoder, encoders);
+        return passwordEncoder.encode(userPassword);
+    }
 
 
 }
