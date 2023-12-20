@@ -32,9 +32,9 @@ public class UserController {
     }
 
     // TODO: functionality for updating a user
-    @PostMapping(value = "update/user/{userId}")
-    public UserDto updateUser(@PathVariable UUID userId, UserDto userDto) {
-        userDto.setUserId(userId);
-        return userService.updateUser(userDto);
-    }
+//    @PostMapping(value = "update/user/{userId}")
+//    public UserDto updateUser(@PathVariable UUID userId, UserDto userDto) {
+//        userDto.setUserId(userId);
+//        return userService.updateUser(userDto);
+//    }
 }
