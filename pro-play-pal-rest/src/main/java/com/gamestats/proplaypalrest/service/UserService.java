@@ -74,11 +74,6 @@ public class UserService {
 //        return null;
 //    }
 
-//    private String setPassword(String userPassword) {
-//        if (nonNull(userPassword)) {
-//            return hashUserPassword(userPassword);
-//        }
-//    }
 
     private String hashUserPassword(String userPassword) {
         String idForEncoder = "bcrypt";
@@ -88,12 +83,12 @@ public class UserService {
         return passwordEncoder.encode(userPassword);
     }
 
-    // Not actual authentication but initial brainstorm
-    private boolean authenticateUser(String username, String givenPassword) {
+    public boolean authenticateUser(String username, String givenPassword) {
         User user = userRepo.findByUserName(username);
         if (nonNull(user)) {
             String assignedPassword = user.getPassword();
-            if (givenPassword.equals(assignedPassword)) {
+            String hashedPassword = hashUserPassword(givenPassword);
+            if (hashedPassword.equals(assignedPassword)) {
                 return true;
             }
         }

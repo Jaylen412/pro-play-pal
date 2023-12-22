@@ -31,6 +31,13 @@ public class UserController {
         return userService.getUser(userId);
     }
 
+    // TODO: Authenticate user logins
+    @GetMapping(value = "user/login")
+    public boolean validateUser(@RequestParam String username, @RequestParam("password") String password) {
+        boolean authenticated = userService.authenticateUser(username, password);
+       return authenticated;
+    }
+
     // TODO: functionality for updating a user
 //    @PostMapping(value = "update/user/{userId}")
 //    public UserDto updateUser(@PathVariable UUID userId, UserDto userDto) {

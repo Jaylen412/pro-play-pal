@@ -2,15 +2,12 @@ package com.gamestats.proplaypalrest.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,34 +23,21 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-//Useful stuff, but the video lagged behind the audio for the entire "Implement JWT authentication filter" chapter.
-//I wasn't able to follow this most crucial part, which kind of killed the fun.
-//
-//Notes for fellow viewers:
-//1. You might get warnings from the IDE saying "Method annotated with @Bean is called directly. Use dependency injection instead."
-//Annotating the SecurityConfig class with @Configuration will resolve the issue.
-//
 //2. I used Spring Boot 3.0.0 (which was available when this video was premiered), and had to make several changes in the securityFilterChain.
 //- authorizeRequests method is deprecated, you should use authorizeHttpRequests instead
 //- antMatchers method has been removed, so I used securityMatcher method. BUT with securityMatcher you specify which path patterns you want to INCLUDE for "authentication"; which is the opposite of antMatcher( ).permitAll( ) approach.
 //In my code I set up everything under "/api/**" to be authenticated, and moved the AuthenticationController outside of it.
 //This way I can access the "/authenticate" endpoint to obtain the JWT token, and then use the token to access endpoints under "/api/v1/...".
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests((authorize) -> authorize
-//                        .anyRequest().permitAll()
-//                );
-//        return http.build();
-//    }
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
                     .authenticated())
             .httpBasic(withDefaults())
             .formLogin(withDefaults())
+            .securityMatcher("/console/**")
             .csrf(AbstractHttpConfigurer::disable);
+
     return http.build();
 }
 
