@@ -60,21 +60,20 @@ public class UserService {
     }
 
     // TODO: Refactor with a target user and source user in mind
-    public UserDto updateUser(UserDto userDto) {
-        Optional<User> user = userRepo.findById(userDto.getUserId());
-        if (nonNull(user)) {
-            User updatedUser = user.get();
-            updatedUser.setUserId(userDto.getUserId());
+//    public UserDto updateUser(User sourceUser) {
+//        Optional<User> targetUser = userRepo.findById(sourceUser.getUserId());
+//        if (nonNull(targetUser)) {
+//            User updatedUser = targetUser.get();
 //            check if username exist if it does check if it belongs to the current user if so allow it if not "username already exist"
 //            updatedUser.setUserName();
-            updatedUser.setFavoriteTeam(userDto.getFavoriteTeam());
-//            Take updated password, pass into password hasher
-//            updatedUser.setPassword();
-            userRepo.save(updatedUser);
-            return userMapper.userEntityToDto(updatedUser);
-        }
-        return null;
-    }
+//            updatedUser.setFavoriteTeam(sourceUser.getFavoriteTeam());
+//            updatedUser.setPassword(setPassword(sourceUser.getPassword()));
+//            userRepo.save(updatedUser);
+//            return userMapper.userEntityToDto(updatedUser);
+//        }
+//        return null;
+//    }
+
 
     private String hashUserPassword(String userPassword) {
         String idForEncoder = "bcrypt";
@@ -82,6 +81,18 @@ public class UserService {
         encoders.put(idForEncoder, new BCryptPasswordEncoder());
         PasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncoder, encoders);
         return passwordEncoder.encode(userPassword);
+    }
+
+    public boolean authenticateUser(String username, String givenPassword) {
+        User user = userRepo.findByUserName(username);
+        if (nonNull(user)) {
+            String assignedPassword = user.getPassword();
+            String hashedPassword = hashUserPassword(givenPassword);
+            if (hashedPassword.equals(assignedPassword)) {
+                return true;
+            }
+        }
+       return false;
     }
 
 
