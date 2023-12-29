@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -58,17 +59,19 @@ public class UserService {
         throw new NoSuchElementException(String.format("User: [%s] was not able to be located", userId));
     }
 
-    public UserDto updateUser(String userName, UserDto sourceUser) throws Exception {
-        User targetUser = userRepo.findByUserName(userName);
-        if (nonNull(targetUser)) {
+    public UserDto updateUser(UUID userId, UserDto sourceUser) throws Exception {
+        Optional<User> optionalUser = userRepo.findById(userId);
+        if (nonNull(optionalUser)) {
+            User targetUser = optionalUser.get();
             try {
                 setUserName(targetUser, sourceUser);
+                setFavoriteTeam(targetUser, sourceUser);
+                userRepo.save(targetUser);
+                return userMapper.userEntityToDto(targetUser);
             } catch (Exception e) {
                 log.error(e.getMessage());
+                throw new Exception(e.getMessage());
             }
-            setFavoriteTeam(targetUser, sourceUser);
-            userRepo.save(targetUser);
-            return userMapper.userEntityToDto(targetUser);
         }
         return null;
     }

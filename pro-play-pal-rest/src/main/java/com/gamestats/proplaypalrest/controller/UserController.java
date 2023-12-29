@@ -33,9 +33,9 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-        @PostMapping(value = "update/user/{userName}")
-    public UserDto updateUser(@PathVariable String userName, @RequestBody UserDto userDto) throws Exception {
-        return userService.updateUser(userName, userDto);
+        @PostMapping(value = "update/user/{userId}")
+    public UserDto updateUser(@PathVariable UUID userId, @RequestBody UserDto userDto) throws Exception {
+        return userService.updateUser(userId, userDto);
     }
 
     @PostMapping(value = "update/password/{userName}")
