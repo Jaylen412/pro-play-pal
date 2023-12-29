@@ -3,6 +3,7 @@ package com.gamestats.proplaypalrest.controller;
 import com.gamestats.proplaypalrest.model.User;
 import com.gamestats.proplaypalrest.model.UserDto;
 import com.gamestats.proplaypalrest.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/")
 public class UserController {
@@ -31,6 +33,17 @@ public class UserController {
         return userService.getUser(userId);
     }
 
+        @PostMapping(value = "update/user/{userName}")
+    public UserDto updateUser(@PathVariable String userName, @RequestBody UserDto userDto) throws Exception {
+        return userService.updateUser(userName, userDto);
+    }
+
+    @PostMapping(value = "update/password/{userName}")
+    public ResponseEntity<String> updatePassword(@PathVariable String userName, @RequestParam String updatedPassword) {
+        userService.updatePassword(userName, updatedPassword);
+        return new ResponseEntity<>(String.format("Password has been updated for user: %s",userName), HttpStatus.OK);
+    }
+
     // TODO: Authenticate user logins
     @GetMapping(value = "user/login")
     public boolean validateUser(@RequestParam String username, @RequestParam("password") String password) {
@@ -38,10 +51,4 @@ public class UserController {
        return authenticated;
     }
 
-    // TODO: functionality for updating a user
-//    @PostMapping(value = "update/user/{userId}")
-//    public UserDto updateUser(@PathVariable UUID userId, UserDto userDto) {
-//        userDto.setUserId(userId);
-//        return userService.updateUser(userDto);
-//    }
 }

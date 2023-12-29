@@ -59,28 +59,19 @@ public class UserService {
         throw new NoSuchElementException(String.format("User: [%s] was not able to be located", userId));
     }
 
-    // TODO: Refactor with a target user and source user in mind
-//    public UserDto updateUser(User sourceUser) {
-//        Optional<User> targetUser = userRepo.findById(sourceUser.getUserId());
-//        if (nonNull(targetUser)) {
-//            User updatedUser = targetUser.get();
-//            check if username exist if it does check if it belongs to the current user if so allow it if not "username already exist"
-//            updatedUser.setUserName();
-//            updatedUser.setFavoriteTeam(sourceUser.getFavoriteTeam());
-//            updatedUser.setPassword(setPassword(sourceUser.getPassword()));
-//            userRepo.save(updatedUser);
-//            return userMapper.userEntityToDto(updatedUser);
-//        }
-//        return null;
-//    }
-
-
-    private String hashUserPassword(String userPassword) {
-        String idForEncoder = "bcrypt";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(idForEncoder, new BCryptPasswordEncoder());
-        PasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncoder, encoders);
-        return passwordEncoder.encode(userPassword);
+    public UserDto updateUser(String userName, UserDto sourceUser) throws Exception {
+        User targetUser = userRepo.findByUserName(userName);
+        if (nonNull(targetUser)) {
+            try {
+                setUserName(targetUser, sourceUser);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+            setFavoriteTeam(targetUser, sourceUser);
+            userRepo.save(targetUser);
+            return userMapper.userEntityToDto(targetUser);
+        }
+        return null;
     }
 
     public boolean authenticateUser(String username, String givenPassword) {
@@ -92,8 +83,43 @@ public class UserService {
                 return true;
             }
         }
-       return false;
+        return false;
     }
 
+    public void updatePassword(String userName, String updatedPassword) {
+        User targetUser = userRepo.findByUserName(userName);
+        if (nonNull(targetUser)) {
+            String hashedPassword = hashUserPassword(updatedPassword);
+            targetUser.setPassword(hashedPassword);
+            userRepo.save(targetUser);
+            log.info(String.format("Saving updated password for %s", targetUser.getUserName()));
+        }
+    }
+
+    private void setUserName(User targetUser, UserDto sourceUser) throws Exception {
+        if (nonNull(sourceUser.getUserName())) {
+            User existingUserName = userRepo.findByUserName(sourceUser.getUserName());
+            if (isNull(existingUserName)) {
+                targetUser.setUserName(sourceUser.getUserName());
+                log.info(String.format("User %s has updated username to: %s", targetUser.getId(), targetUser.getUserName()));
+            } else {
+                throw new Exception(String.format("Username: %s already exists", sourceUser.getUserName()));
+            }
+        }
+    }
+
+    private void setFavoriteTeam(User targetUser, UserDto sourceUser) {
+        if (nonNull(sourceUser.getFavoriteTeam())) {
+            targetUser.setFavoriteTeam(sourceUser.getFavoriteTeam());
+        }
+    }
+
+    private String hashUserPassword(String userPassword) {
+        String idForEncoder = "bcrypt";
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(idForEncoder, new BCryptPasswordEncoder());
+        PasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncoder, encoders);
+        return passwordEncoder.encode(userPassword);
+    }
 
 }

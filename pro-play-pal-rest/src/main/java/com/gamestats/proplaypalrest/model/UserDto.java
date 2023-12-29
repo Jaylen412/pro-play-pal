@@ -1,5 +1,6 @@
 package com.gamestats.proplaypalrest.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +11,10 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public class UserDto {
-    private UUID userId;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String userName;
