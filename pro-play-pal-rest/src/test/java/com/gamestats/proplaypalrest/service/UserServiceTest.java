@@ -6,7 +6,6 @@ import com.gamestats.proplaypalrest.model.User;
 import com.gamestats.proplaypalrest.model.UserDto;
 import com.gamestats.proplaypalrest.model.UserRole;
 import com.gamestats.proplaypalrest.repo.UserRepo;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,6 +91,8 @@ public class UserServiceTest {
         Exception exception = assertThrows(Exception.class, () -> {
             userService.createUser(testUser);
         });
+
+        assertEquals("User: ben10 Already Exist", exception.getMessage());
         verify(userRepo, times(1)).findByUserName(anyString());
     }
 
@@ -296,31 +297,32 @@ public class UserServiceTest {
         assertEquals(false, result);
         verify(userRepo, times(1)).findByUserName(userName);
     }
+/*
+    @Test
+    public void updatePassword_succeeds() {
+        String userName = "Benjamin697";
+        String oldPassword = "test";
+        String updatedPassword = "123";
 
-//    @Test
-//    public void updatePassword_succeeds() {
-//        String userName = "Benjamin697";
-//        String oldPassword = "test";
-//        String updatedPassword = "123";
-//
-//        User user = User.builder()
-//                .id(UUID.randomUUID())
-//                .firstName("")
-//                .lastName("")
-//                .password(BCrypt.hashpw("test", BCrypt.gensalt()))
-//                .userName(userName)
-//                .build();
-//
-//        User updatedUser = User.builder()
-//                .id(UUID.randomUUID())
-//                .firstName("")
-//                .lastName("")
-//                .password(BCrypt.hashpw("123", BCrypt.gensalt()))
-//                .userName(userName)
-//                .build();
-//
-//        when(userRepo.findByUserName(userName)).thenReturn(user);
-//        when(userRepo.save(isA(User.class))).thenReturn(updatedUser);
-//    }
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .firstName("")
+                .lastName("")
+                .password(BCrypt.hashpw("test", BCrypt.gensalt()))
+                .userName(userName)
+                .build();
 
+        User updatedUser = User.builder()
+                .id(UUID.randomUUID())
+                .firstName("")
+                .lastName("")
+                .password(BCrypt.hashpw("123", BCrypt.gensalt()))
+                .userName(userName)
+                .build();
+
+        when(userRepo.findByUserName(userName)).thenReturn(user);
+        when(userRepo.save(isA(User.class))).thenReturn(updatedUser);
+    }
+    TEST VOID FUNCTION
+*/
 }

@@ -42,7 +42,7 @@ public class UserService {
             userRepo.save(newUser);
             return userMapper.userEntityToDto(newUser);
         }
-        throw new Exception(String.format("User [%s] Already Exist",user.getUserName()));
+        throw new Exception(String.format("User: %s Already Exist",user.getUserName()));
     }
 
     public UserDto getUser(UUID userId) {
