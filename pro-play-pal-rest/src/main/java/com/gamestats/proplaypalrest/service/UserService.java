@@ -5,13 +5,12 @@ import com.gamestats.proplaypalrest.model.UserDto;
 import com.gamestats.proplaypalrest.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -34,7 +33,7 @@ public class UserService {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .userName(user.getUserName())
-                    .password(hashUserPassword(user.getPassword()))
+                    .password(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()))
                     .userRole(user.getUserRole())
                     .createdDate(Instant.now())
                     .build();
@@ -75,24 +74,26 @@ public class UserService {
     }
 
     public boolean authenticateUser(String username, String givenPassword) {
+        boolean authenticate = false;
         User user = userRepo.findByUserName(username);
         if (nonNull(user)) {
-            String assignedPassword = user.getPassword();
-            String hashedPassword = hashUserPassword(givenPassword);
-            if (hashedPassword.equals(assignedPassword)) {
-                return true;
-            }
+        String userPassword = user.getPassword();
+         authenticate = BCrypt.checkpw(givenPassword, userPassword);
         }
-        return false;
+        return authenticate;
     }
 
-    public void updatePassword(String userName, String updatedPassword) {
+    public void updatePassword(String userName, String oldPassword, String updatedPassword) throws Exception {
         User targetUser = userRepo.findByUserName(userName);
         if (nonNull(targetUser)) {
-            String hashedPassword = hashUserPassword(updatedPassword);
-            targetUser.setPassword(hashedPassword);
-            userRepo.save(targetUser);
-            log.info(String.format("Saving updated password for %s", targetUser.getUserName()));
+            if (BCrypt.checkpw(oldPassword, targetUser.getPassword())) {
+                String hashedPassword = BCrypt.hashpw(updatedPassword, BCrypt.gensalt());
+                targetUser.setPassword(hashedPassword);
+                userRepo.save(targetUser);
+                log.info(String.format("Saving updated password for %s", targetUser.getUserName()));
+            } else {
+                throw new Exception("Invalid Password");
+            }
         }
     }
 
@@ -112,14 +113,6 @@ public class UserService {
         if (nonNull(sourceUser.getFavoriteTeam())) {
             targetUser.setFavoriteTeam(sourceUser.getFavoriteTeam());
         }
-    }
-
-    private String hashUserPassword(String userPassword) {
-        String idForEncoder = "bcrypt";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(idForEncoder, new BCryptPasswordEncoder());
-        PasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncoder, encoders);
-        return passwordEncoder.encode(userPassword);
     }
 
 }

@@ -39,16 +39,20 @@ public class UserController {
     }
 
     @PostMapping(value = "update/password/{userName}")
-    public ResponseEntity<String> updatePassword(@PathVariable String userName, @RequestParam String updatedPassword) {
-        userService.updatePassword(userName, updatedPassword);
-        return new ResponseEntity<>(String.format("Password has been updated for user: %s",userName), HttpStatus.OK);
+    public ResponseEntity<String> updatePassword(@PathVariable String userName,@RequestParam String oldPassword, @RequestParam String updatedPassword) throws Exception {
+        try {
+            userService.updatePassword(userName, oldPassword, updatedPassword);
+            return new ResponseEntity<>(String.format("Password has been updated for user: %s",userName), HttpStatus.OK);
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ResponseEntity<>("Invalid Password", HttpStatus.BAD_REQUEST);
     }
 
-    // TODO: Authenticate user logins
     @GetMapping(value = "user/login")
-    public boolean validateUser(@RequestParam String username, @RequestParam("password") String password) {
-        boolean authenticated = userService.authenticateUser(username, password);
-       return authenticated;
+    public ResponseEntity<String> validateUser(@RequestParam String userName, @RequestParam("password") String password) {
+        boolean authenticated = userService.authenticateUser(userName, password);
+       return authenticated ? new ResponseEntity<>("Authenticated", HttpStatus.OK) : new ResponseEntity<>("Un-authenticated", HttpStatus.BAD_REQUEST);
     }
 
 }
