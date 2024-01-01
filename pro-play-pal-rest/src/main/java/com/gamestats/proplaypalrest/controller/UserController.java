@@ -52,7 +52,7 @@ public class UserController {
     @GetMapping(value = "user/login")
     public ResponseEntity<String> validateUser(@RequestParam String userName, @RequestParam("password") String password) {
         boolean authenticated = userService.authenticateUser(userName, password);
-       return authenticated ? new ResponseEntity<>("Authenticated", HttpStatus.OK) : new ResponseEntity<>("Un-authenticated", HttpStatus.BAD_REQUEST);
+       return authenticated ? new ResponseEntity<>("Authenticated", HttpStatus.OK) : new ResponseEntity<>("Incorrect password", HttpStatus.UNAUTHORIZED);
     }
 
 }

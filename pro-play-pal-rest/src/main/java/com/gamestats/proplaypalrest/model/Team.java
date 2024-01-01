@@ -1,6 +1,7 @@
 package com.gamestats.proplaypalrest.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,43 +19,39 @@ import java.util.UUID;
 @Entity
 public class Team {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID teamId;
     @Column(name = "team_key")
+    @JsonProperty("Key")
     private String key;
+    @Id
+    @JsonProperty("TeamID")
+    private Integer teamId;
+    @JsonProperty("PlayerID")
+    private Integer playerId;
+    @JsonProperty("City")
     private String city;
+    @JsonProperty("Name")
     private String name;
+    @JsonProperty("Conference")
     private String conference;
+    @JsonProperty("Division")
     private String division;
+    @JsonProperty("FullName")
     private String fullName;
-    private String stadiumId;
+    @JsonProperty("StadiumID")
+    private Integer stadiumId;
+    @JsonProperty("GlobalTeamID")
+    private String globalTeamId;
+    @JsonProperty("HeadCoach")
+    private String headCoach;
+    @JsonProperty("WikipediaLogoURL")
+    private String wikipediaLogoUrl;
+    @JsonProperty("WikipediaWordMarkURL")
+    private String wikipediaWordMarkUrl;
+    @JsonProperty("OffensiveCoordinator")
+    private String offensiveCoordinator;
+    @JsonProperty("DefensiveCoordinator")
+    private String defensiveCoordinator;
+    @JsonProperty("SpecialTeamsCoach")
+    private String specialTeamsCoach;
 }
 
-/*
-  {
-    "Key": "ARI",
-    "TeamID": 1,
-    "PlayerID": 1,
-    "City": "Arizona",
-    "Name": "Cardinals",
-    "Conference": "NFC",
-    "Division": "West",
-    "FullName": "Arizona Cardinals",
-    "StadiumID": 29,
-    "ByeWeek": 14,
-    "GlobalTeamID": 1,
-    "HeadCoach": "Jonathan Gannon",
-    "PrimaryColor": "97233F",
-    "SecondaryColor": "FFFFFF",
-    "TertiaryColor": "000000",
-    "QuaternaryColor": "A5ACAF",
-    "WikipediaLogoURL": "https://upload.wikimedia.org/wikipedia/en/7/72/Arizona_Cardinals_logo.svg",
-    "WikipediaWordMarkURL": "https://upload.wikimedia.org/wikipedia/commons/0/04/Arizona_Cardinals_wordmark.svg",
-    "OffensiveCoordinator": "Drew Petzing",
-    "DefensiveCoordinator": "Nick Rallis",
-    "SpecialTeamsCoach": "Jeff Rodgers",
-    "OffensiveScheme": "3WR",
-    "DefensiveScheme": "3-4"
-  }
- */
