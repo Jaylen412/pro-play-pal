@@ -1,4 +1,4 @@
 package com.gamestats.proplaypalrest.jobs;
 
-public class SportsDataRefresh {
+public class TeamDataRefresh {
 }
